@@ -1,0 +1,176 @@
+######### 
+######### Original config
+######### 
+version: 1
+ticks: 10
+outMessage: 
+inMessage: 
+worlds:
+    world1name:
+        radius: 300
+        z: 0
+        x: 0
+        exceptions:
+            - croxis
+    world2name:
+         radius: 250
+         z: 50
+         x: -40
+        exceptions:
+            -
+health: 1
+
+# Example config
+boundaries:
+  main_boundary:
+    limits:
+      - radius: 2000
+        x-centre: 0
+        z-centre: 0
+    world: ALL
+    damage: 1
+    except: [player1, player2]
+    exceptpermissions: [main_boundary_override]  # give players otherbounds.custom.main_boundary_override
+
+
+######### 
+######### New config
+######### 
+boundaries:
+  zarRadiation:
+    limits:
+      - radius: (if set assume circle, dist in minecraft block units)
+      - length: (assumes rectangle, dist in minecraft block units)
+      - width: only applicable for rectangles, if this is missing will default to square
+      - x-centre:
+      - z-centre:
+    invertlimits: true/false (this will cause damage to apply if inside the limits, if true)
+
+use "limits" -or- "region"
+    region: <regionname> (support worldguard/regios/izone/others perhaps?)
+
+    damage: (postive/negative - can be a range, 0 will simply push you back) (possible: list of damage values with %'s for uneven distribution, eg. generally around base level but low chance of high damage?)
+    damagerate:
+
+    world: [list of worlds] or ALL
+
+    inmessage:
+    outmessage:
+
+    except: [list of players]
+    exceptpermissions: permission string
+
+
+Multiple limits - damage done will be that of the last limit scanned in the config file.  ie. assume two limits radius 500 (damage 1) & 1000 (damage2) - if player is at 600 they get damage: 1, if player is at 1100 they get damage: 2 (not three).  
+
+Alertnatively if we have 500r (dmg 2) and 1000r (dmg 1) the player at 600 will receive 2 dmg however at 1100 only 1 damage is done.
+
+If a player is inside any boundary it is assumed that they are "safe", unless you create an inverted boundary that harms the player.
+
+av 30 players, 10 boundaries = 300 loops/second
+
+* Use two threads - run boundary checking stuff (and add/remove from the damagelist) in an async thread and do actual damage in a sync scheduler.  Readonly on the players in async and readonly on the damagelist in the sync.
+
+// probably better to do on delays - 5 to 10 default?
+ eachGlobalDelay()
+  for (player : getPlayers()) {
+//  onPlayerMove(player) {
+    Integer boundaryDamage = 0;
+    Integer invertedBoundaryDamage = 0;
+
+    for (boundary : getBoundaries(world)) {
+      boolean playerInSafeZone = false;
+      
+      // for each boundary:
+      //   check if player in limits
+      //   add to boundarylist for checking whether to send inmessage/outmessage
+      //   add to damagelist for actual damage to apply each (x) ticks
+      
+      // Inverted Boundaries
+      if (boundary.invertlimits) {
+        if (checkInsideBoundary(player, boundary)) {
+          invertedBoundaryDamage = boundary.damage;
+          if (!inDamageList(player, boundary) {
+            player.sendMessage(boundary.inmessage);
+            addToBoundaryList(player, boundary);
+          }
+        } else if (playerBounds.get(boundary)) {
+          // no need to set damage to zero for inverted boundaries
+          removeFromBoundaryList(player, boundary);
+          player.sendMessage(boundary.outmessage);
+        }
+      } else {
+      // Standard Boundaries
+        if (checkOutsideBoundary(player, boundary)) {
+          boundaryDamage = boundary.damage;
+          if (!inDamageList(player, boundary) {
+            player.sendMessage(boundary.inmessage);
+            addToBoundaryList(player, boundary);
+          }
+        } else if (playerBounds.get(boundary)) {
+          removeFromBoundaryList(player, boundary);
+          playerInSafeZone = true; // we're inside a boundary so "safe"
+          player.sendMessage(boundary.outmessage);
+        }
+      }
+    }
+  }
+    
+    // deal the applicable damage for this player
+    if (!playerInSafeZone) {
+      // only deal damage if the player is not inside a normal boundary
+      boundaryDamageList.add(player, boundaryDamage);
+    }
+    // inverted damage is done even if inside a normal boundary
+    invertedBoundaryDamageList.add(player, invertedBoundaryDamage);
+  }
+  
+  HashMap <Player, Integer> damageList;
+
+  HashMap <Player, BKContainer_Boundaries> boundaryMap;
+  
+  Boolean hasBoundary(Player player, BKBoundary boundaryToCheck) {
+    BKContainer_Boundaries boundaryList = parent.damageList.get(player);
+    
+    for (boundary : boundaryList) {
+      if (boundary.name.equalsIgnoreCase(boundaryToCheck.name) {
+        return true;
+      }
+    }
+    
+    // no match - so return false
+    return false;
+  }
+  
+  void addToBoundaryList(Player player, BKBoundary boundary) {
+    
+    BKContainer_Boundaries boundaryList = parent.damageList.get(player);
+    
+    if (boundaryList != null) {
+      boundaryList.add(boundary);
+    } else {
+      boundaryList = new BKContainer_Boundaries();
+      boundaryList.add(boundary);
+    }
+  
+    parent.boundaryMap.add(player, boundaryList);
+  }
+  
+  void removeFromBoundaryList(Player player, BKBoundary boundary) {
+    
+  }
+  
+
+  
+  
+    public void run() {
+      int i = 0;
+      for(i=0; i<plugin.outofBounds.size(); i++){
+        if (plugin.outofBounds.get(i).getHealth() - 1 >= 0){
+  //      System.out.println("Damaging player..."+plugin.outofBounds.get(i).getName());
+          if (plugin.worlddbexception.get(plugin.outofBounds.get(i).getWorld().getName()).contains(plugin.outofBounds.get(i).getName()) == false){
+            plugin.outofBounds.get(i).damage(plugin.health);
+          }
+        }
+      }
+    }

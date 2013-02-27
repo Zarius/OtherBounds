@@ -1,0 +1,7 @@
+name: OtherBounds
+main: com.gmail.zariust.otherbounds.Main
+version: 0.1
+authors:
+  - Zarius
+softdepend:
+  - OtherDrops
