@@ -1,5 +1,6 @@
 package com.gmail.zariust.otherbounds;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,16 +8,13 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.event.Event;
 
-import com.gmail.zariust.otherbounds.boundary.Boundary;
+import com.gmail.zariust.metrics.Metrics;
 import com.gmail.zariust.otherbounds.boundary.BoundaryList;
 import com.gmail.zariust.otherbounds.common.Verbosity;
-import com.gmail.zariust.otherdrops.parameters.actions.DamageAction;
 
 public class Main extends JavaPlugin 
 {
@@ -59,12 +57,15 @@ public class Main extends JavaPlugin
         log = Logger.getLogger("Minecraft");
     }
 
-    public void onEnable() {
+    @Override
+	public void onEnable() {
         Main.server = getServer();
         Main.plugin = this;
         pluginName = this.getDescription().getName();
         pluginVersion = this.getDescription().getVersion();
         
+		enableMetrics();
+
         // Load the config files
         Main.config = new Config(this);
         config.loadConfig();
@@ -84,14 +85,23 @@ public class Main extends JavaPlugin
         syncTaskId = server.getScheduler().scheduleSyncRepeatingTask(plugin, syncRunner, Config.taskDelay+10, Config.taskDelay);                     
     };
     
-    public void onDisable() {
+    @Override
+	public void onDisable() {
         // Stop any running scheduler tasks
         //server.getScheduler().cancelAllTasks();  // does this cancel only this plugins tasks?
         server.getScheduler().cancelTask(syncTaskId);
         server.getScheduler().cancelTask(aSyncTaskId);
     };
  
-    
+	public static void enableMetrics()
+	{
+		try {
+			Metrics metrics = new Metrics(Main.plugin);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
+	}    
     
     /**
      * logWarning - display a warning log message with a standard prefix
