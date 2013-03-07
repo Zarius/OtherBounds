@@ -3,7 +3,6 @@ package com.gmail.zariust.otherbounds;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.gmail.zariust.otherbounds.common.Verbosity;
@@ -23,7 +22,7 @@ class RunSync implements Runnable {
     		Effects effects = Main.damageList.get(player);
     		int damage = effects.damagePerCheck + effects.invertedDamagePerCheck;
     		if (damage > 0) { 
-    			Main.logInfo("Damaging player ("+player.getName()+") for "+damage+" damage.");
+    			Main.logInfo("Damaging player ("+player.getName()+") for "+damage+" damage.", Verbosity.HIGHEST);
     			player.damage(damage);
     		} else if (damage < 0) {
     			player.setHealth(player.getHealth()+damage);
