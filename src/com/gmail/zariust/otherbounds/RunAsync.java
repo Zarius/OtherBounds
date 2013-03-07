@@ -1,5 +1,6 @@
 package com.gmail.zariust.otherbounds;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.World;
@@ -21,7 +22,9 @@ class RunAsync implements Runnable {
     public void run() {
     	Main.logInfo("Async run...", Verbosity.EXTREME);
         for (World world : plugin.getServer().getWorlds()) {
-            for (Player player : world.getPlayers()) {
+        	List<Player> playerList = new ArrayList<Player>();
+        	playerList.addAll(world.getPlayers());
+            for (Player player : playerList) {
                 String playerName = player.getName();
                 //  onPlayerMove(player) {
                 int boundaryDamage = 0;
