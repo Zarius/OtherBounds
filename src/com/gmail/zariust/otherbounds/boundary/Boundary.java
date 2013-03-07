@@ -8,10 +8,9 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.gmail.zariust.otherbounds.OtherBoundsConfig;
 import com.gmail.zariust.otherbounds.OtherBounds;
+import com.gmail.zariust.otherbounds.OtherBoundsConfig;
 import com.gmail.zariust.otherbounds.common.Verbosity;
-import com.gmail.zariust.otherdrops.parameters.actions.Action;
 
 public abstract class Boundary {
     public String name;
@@ -29,7 +28,7 @@ public abstract class Boundary {
     public String dangerMessage;
     public String safeMessage;
     
-    public List<Action> actions;
+ //   public List<Action> actions;
     
     public Boundary() {
 
