@@ -1,0 +1,19 @@
+name: OtherBounds
+main: com.gmail.zariust.otherbounds.Main
+version: @build.major@.@build.minor@.@build.revision@
+builddate: @build.date-refer to version.properties for details@
+authors:
+  - Zarius
+website: http://dev.bukkit.org/server-mods/otherdrops/
+softdepend:
+  - OtherDrops
+commands:
+    ob:
+        description: Administrate the OtherBounds plugin
+        aliases: [obr]
+        usage: |
+            OtherBounds (configure anything to drop anything) 
+            §7version: @build.major@.@build.minor@.@build.revision@ built: @build.date@
+
+            (/obr) /ob reload - reload config
+
