@@ -1,22 +1,21 @@
 package com.gmail.zariust.otherbounds;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.gmail.zariust.metrics.Metrics;
 import com.gmail.zariust.otherbounds.boundary.BoundaryList;
 import com.gmail.zariust.otherbounds.common.Verbosity;
 
-public class Main extends JavaPlugin 
+public class OtherBounds extends JavaPlugin 
 {
     
     public static HashMap <Player, Effects> damageList;
@@ -25,21 +24,22 @@ public class Main extends JavaPlugin
     // usefull??
     public static HashMap<String, List<Long>> profileMap;
 
-    private static Config config;
-    private static Logger log;
+    static OtherBoundsConfig config;
+    static Logger log;
     protected static Random rng;    
     private static Server server;
-    private static Main plugin;
+    static OtherBounds plugin;
+	boolean enabled;
     
     ListenerPlayer playerListener;
     
     public static String pluginName;
     public static String pluginVersion;    
     
-    int syncTaskId = 0;
-    int aSyncTaskId = 0;
+    static int syncTaskId = 0;
+    static int aSyncTaskId = 0;
 
-    public Main() {
+    public OtherBounds() {
         
         playerListener = new ListenerPlayer();
         
@@ -59,31 +59,40 @@ public class Main extends JavaPlugin
 
     @Override
 	public void onEnable() {
-        Main.server = getServer();
-        Main.plugin = this;
+        OtherBounds.server = getServer();
+        OtherBounds.plugin = this;
         pluginName = this.getDescription().getName();
         pluginVersion = this.getDescription().getVersion();
         
-		enableMetrics();
+		this.getCommand("ob").setExecutor(new OtherBoundsCommand(this));
 
-        // Load the config files
-        Main.config = new Config(this);
-        config.loadConfig();
-        
+		// Load the config files
+        OtherBounds.config = new OtherBoundsConfig(this);
+        config.load(); // load config, Dependencies & enable
+    };
+    
+	public static void enableOtherBounds() {
         // Grab plugin manager
         // Register Events (OnPlayerMove if enabled in options?)
-        PluginManager pm = getServer().getPluginManager();
+		PluginManager pm = Bukkit.getServer().getPluginManager();
         //pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Config.pri, this);
 
         // Set up scheduler tasks
         // async - runs every x ticks and checks if players are in/outside boundaries
-        RunAsync aSyncRunner = new RunAsync(this);
-        aSyncTaskId = server.getScheduler().scheduleAsyncRepeatingTask(plugin, aSyncRunner, Config.taskDelay, Config.taskDelay);                     
+        RunAsync aSyncRunner = new RunAsync(OtherBounds.plugin);
+        aSyncTaskId = server.getScheduler().scheduleAsyncRepeatingTask(OtherBounds.plugin, aSyncRunner, OtherBoundsConfig.taskDelay, OtherBoundsConfig.taskDelay);                     
 
         // sync - runs every x ticks and checks if players need to be damaged
         RunSync syncRunner = new RunSync();
-        syncTaskId = server.getScheduler().scheduleSyncRepeatingTask(plugin, syncRunner, Config.taskDelay+10, Config.taskDelay);                     
-    };
+        syncTaskId = server.getScheduler().scheduleSyncRepeatingTask(OtherBounds.plugin, syncRunner, OtherBoundsConfig.taskDelay+10, OtherBoundsConfig.taskDelay);                     
+		
+		plugin.enabled = true;
+	}
+
+	public static void disableOtherBounds() {
+		server.getScheduler().cancelAllTasks();		
+		plugin.enabled = false;
+	}
     
     @Override
 	public void onDisable() {
@@ -92,16 +101,6 @@ public class Main extends JavaPlugin
         server.getScheduler().cancelTask(syncTaskId);
         server.getScheduler().cancelTask(aSyncTaskId);
     };
- 
-	public static void enableMetrics()
-	{
-		try {
-			Metrics metrics = new Metrics(Main.plugin);
-			metrics.start();
-		} catch (IOException e) {
-			// Failed to submit the stats :-(
-		}
-	}    
     
     /**
      * logWarning - display a warning log message with a standard prefix
@@ -124,10 +123,10 @@ public class Main extends JavaPlugin
 	// LogInfo & LogWarning - if given a level will report the message
 	// only for that level & above
 	public static void logInfo(String msg, Verbosity level) {
-		if (Config.verbosity.exceeds(level)) logInfo(msg);
+		if (OtherBoundsConfig.verbosity.exceeds(level)) logInfo(msg);
 	}
 	public static void logWarning(String msg, Verbosity level) {
-		if (Config.verbosity.exceeds(level)) logWarning(msg);
+		if (OtherBoundsConfig.verbosity.exceeds(level)) logWarning(msg);
 	}
 
 }

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.gmail.zariust.otherbounds.Config;
-import com.gmail.zariust.otherbounds.Main;
+import com.gmail.zariust.otherbounds.OtherBoundsConfig;
+import com.gmail.zariust.otherbounds.OtherBounds;
 import com.gmail.zariust.otherbounds.common.Verbosity;
 import com.gmail.zariust.otherdrops.parameters.actions.Action;
 
@@ -41,7 +41,7 @@ public abstract class Boundary {
 
 	@SuppressWarnings("rawtypes")
 	public static Boundary parseFrom(String name, ConfigurationSection node) {
-		Main.logInfo("Parsing boundary ("+name+") keys:"+node.getKeys(true).toString(), Verbosity.HIGH);
+		OtherBounds.logInfo("Parsing boundary ("+name+") keys:"+node.getKeys(true).toString(), Verbosity.HIGH);
 		String regionName = node.getString("region");
 		Double radius = node.getDouble("radius", 0);
 		Double centerX = node.getDouble("center-x", 0);
@@ -71,14 +71,14 @@ public abstract class Boundary {
 		
 		boundary.except = getMaybeList(node, "except");
 		boundary.exceptPermissions = getMaybeList(node, "exceptpermissions");
-		boundary.worlds = Config.parseWorldsFrom(node, null);
+		boundary.worlds = OtherBoundsConfig.parseWorldsFrom(node, null);
 		boundary.name = name;
 		boundary.damage = node.getInt("damage", 0);
 		boundary.invertLimits = node.getBoolean("invertlimits", false);
 		boundary.safeMessage = node.getString("messagesafe", "");
 		boundary.dangerMessage = node.getString("messagedanger");
 
-		Main.logInfo("Loaded boundary ("+name+"): "+boundary.toString(), Verbosity.NORMAL);
+		OtherBounds.logInfo("Loaded boundary ("+name+"): "+boundary.toString(), Verbosity.NORMAL);
 		
 		return boundary;
 	}

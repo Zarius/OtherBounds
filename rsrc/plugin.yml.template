@@ -1,5 +1,5 @@
 name: OtherBounds
-main: com.gmail.zariust.otherbounds.Main
+main: com.gmail.zariust.otherbounds.OtherBounds
 version: @build.major@.@build.minor@.@build.revision@
 builddate: @build.date-refer to version.properties for details@
 authors:

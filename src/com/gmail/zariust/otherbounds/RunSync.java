@@ -10,19 +10,19 @@ import com.gmail.zariust.otherbounds.common.Verbosity;
 class RunSync implements Runnable {
 
     public void run() {
-    	Main.logInfo("Sync run...", Verbosity.HIGHEST);
+    	OtherBounds.logInfo("Sync run...", Verbosity.HIGHEST);
     	List<Player> removeList = new ArrayList<Player>();
     	
         // Check if player in list
-    	for (Player player : Main.damageList.keySet()) {
+    	for (Player player : OtherBounds.damageList.keySet()) {
     		if (!player.isOnline()) {
     			removeList.add(player);
     			continue;
     		}
-    		Effects effects = Main.damageList.get(player);
+    		Effects effects = OtherBounds.damageList.get(player);
     		int damage = effects.damagePerCheck + effects.invertedDamagePerCheck;
     		if (damage > 0) { 
-    			Main.logInfo("Damaging player ("+player.getName()+") for "+damage+" damage.", Verbosity.HIGHEST);
+    			OtherBounds.logInfo("Damaging player ("+player.getName()+") for "+damage+" damage.", Verbosity.HIGHEST);
     			player.damage(damage);
     		} else if (damage < 0) {
     			player.setHealth(player.getHealth()+damage);
@@ -30,7 +30,7 @@ class RunSync implements Runnable {
     	}
     	
     	for (Player player : removeList) {
-    		Main.damageList.remove(player);
+    		OtherBounds.damageList.remove(player);
     	}
         // damage player
 

@@ -11,9 +11,9 @@ import com.gmail.zariust.otherbounds.common.Verbosity;
 
 class RunAsync implements Runnable {
     
-    private final Main plugin;
+    private final OtherBounds plugin;
     
-    public RunAsync (Main otherBounds) {
+    public RunAsync (OtherBounds otherBounds) {
         this.plugin = otherBounds;
     }
 
@@ -29,7 +29,7 @@ class RunAsync implements Runnable {
                 int boundaryDamage = 0;
                 int invertedBoundaryDamage = 0;
                 boolean playerInSafeZone = false;
-                List <Boundary> boundList = Main.boundaryList.get(world);
+                List <Boundary> boundList = OtherBounds.boundaryList.get(world);
 
                 // Exit if no boundary for this world
                 if (boundList == null) continue;
@@ -51,34 +51,34 @@ class RunAsync implements Runnable {
                         	} else {
                                 invertedBoundaryDamage = boundary.damage;                        		
                         	}
-                            if (!Main.boundaryList.contains(playerName, boundary)) {
+                            if (!OtherBounds.boundaryList.contains(playerName, boundary)) {
                                 player.sendMessage(message);
-                                Main.boundaryList.add(playerName, boundary);
+                                OtherBounds.boundaryList.add(playerName, boundary);
                             }
-                        } else if (Main.boundaryList.contains(playerName, boundary)) {
+                        } else if (OtherBounds.boundaryList.contains(playerName, boundary)) {
                             // no need to set damage to zero for inverted boundaries
-                            Main.boundaryList.remove(playerName, boundary);
+                            OtherBounds.boundaryList.remove(playerName, boundary);
                             player.sendMessage(boundary.safeMessage); // TODO: send message every delaytick or only once when exiting boundary
                         }
                     } else {
                         // Standard Boundaries
                         if (!(boundary.isInside(player, boundary))) {
-                        	Main.logInfo("Player ("+playerName+") is outside boundary ("+boundary.name+"), setting damage to "+boundary.damage+".", Verbosity.HIGHEST);
+                        	OtherBounds.logInfo("Player ("+playerName+") is outside boundary ("+boundary.name+"), setting damage to "+boundary.damage+".", Verbosity.HIGHEST);
                         	String message = boundary.dangerMessage;
                         	if (excepted(player, boundary)) {
                         		message = message + " (excepted)";
                         	} else {
                                 boundaryDamage = boundary.damage;
                         	}
-                            if (!Main.boundaryList.contains(playerName, boundary)) {
+                            if (!OtherBounds.boundaryList.contains(playerName, boundary)) {
                                 player.sendMessage(message); // FIXME: add dangermessage to a list and only show if not in safe zone
-                                Main.boundaryList.add(playerName, boundary);
+                                OtherBounds.boundaryList.add(playerName, boundary);
                             }
                         } else {
-                        	Main.logInfo("Player ("+playerName+") is inside boundary ("+boundary.name+"), setting player as 'safe'.", Verbosity.HIGHEST);
+                        	OtherBounds.logInfo("Player ("+playerName+") is inside boundary ("+boundary.name+"), setting player as 'safe'.", Verbosity.HIGHEST);
                     		playerInSafeZone = true; // we're inside a boundary so "safe"
-                        	if (Main.boundaryList.contains(playerName, boundary)) {
-                        		Main.boundaryList.remove(playerName, boundary);
+                        	if (OtherBounds.boundaryList.contains(playerName, boundary)) {
+                        		OtherBounds.boundaryList.remove(playerName, boundary);
                         		player.sendMessage(boundary.safeMessage);
                         	}
                         }
@@ -87,25 +87,25 @@ class RunAsync implements Runnable {
 
                 Effects effects = new Effects();
                 // deal the applicable damage for this player
-                if (playerInSafeZone && Config.safeInsideBoundary) {
-                	Main.logInfo("Player is in safe zone.", Verbosity.EXTREME);
+                if (playerInSafeZone && OtherBoundsConfig.safeInsideBoundary) {
+                	OtherBounds.logInfo("Player is in safe zone.", Verbosity.EXTREME);
                 } else {
                     // only deal damage if the player is not inside a normal boundary
                     effects.damagePerCheck = boundaryDamage;
-                	Main.logInfo("Player not in safe zone.", Verbosity.EXTREME);
+                	OtherBounds.logInfo("Player not in safe zone.", Verbosity.EXTREME);
                 }
                 // inverted damage is done even if inside a normal boundary
                 effects.invertedDamagePerCheck = invertedBoundaryDamage;
 
-            	Main.logInfo("Adding to damage list for "+playerName+", damage: "+effects.damagePerCheck+" invertedDamage: "+effects.invertedDamagePerCheck, Verbosity.EXTREME);
-                Main.damageList.put(player, effects);
+            	OtherBounds.logInfo("Adding to damage list for "+playerName+", damage: "+effects.damagePerCheck+" invertedDamage: "+effects.invertedDamagePerCheck, Verbosity.EXTREME);
+                OtherBounds.damageList.put(player, effects);
             }
         }
     }
 
 	private boolean excepted(Player player, Boundary boundary) {
 		if (hasException(player, boundary) || hasExceptionPermissions(player, boundary)) {
-			Main.logInfo("Excepted...", Verbosity.EXTREME);
+			OtherBounds.logInfo("Excepted...", Verbosity.EXTREME);
 			return true;
 		}
 		

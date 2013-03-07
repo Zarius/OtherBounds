@@ -26,17 +26,18 @@ import com.gmail.zariust.otherbounds.boundary.Boundary;
 import com.gmail.zariust.otherbounds.common.CommonPlugin;
 import com.gmail.zariust.otherbounds.common.Verbosity;
 
-public class Config {
+public class OtherBoundsConfig {
 
 	public static long taskDelay;
 	public static Verbosity verbosity;
 	public static boolean safeInsideBoundary;
-	private final Main parent;
+	private final OtherBounds parent;
 
 	// Track loaded files so we don't get into an infinite loop
 	Set<String> loadedDropFiles = new HashSet<String>();
+	private String boundariesFile;
 
-	public Config(Main instance) {
+	public OtherBoundsConfig(OtherBounds instance) {
 		parent = instance;
 
 		verbosity = HIGH;
@@ -44,8 +45,21 @@ public class Config {
 		taskDelay = 120;
 	}
 
+	public void load() {
+        loadConfig();
+		Dependencies.init();
+		loadIncludeFile(boundariesFile);
 
+        OtherBounds.disableOtherBounds();
+		OtherBounds.damageList.clear();
+        OtherBounds.enableOtherBounds();
+		OtherBounds.damageList.clear();
+		Log.high("DAMAGE CLEARED"+OtherBounds.damageList.toString());
+	}
+	
 	public void loadConfig() {
+		loadedDropFiles.clear();
+		
 		parent.getDataFolder().mkdirs();
 		String filename = "otherbounds-config.yml";
 
@@ -71,25 +85,24 @@ public class Config {
 			e.printStackTrace();
 		}
 
-		globalConfig.set("verbosity", "normal");
+		//globalConfig.set("verbosity", "normal");
 
 		verbosity = CommonPlugin.getConfigVerbosity(globalConfig);
 		//enableBlockTo = globalConfig.getBoolean("enableblockto", false);
-		String boundariesFile = globalConfig.getString("rootconfig", "otherbounds-config.yml");
+		boundariesFile = globalConfig.getString("rootconfig", "otherbounds-config.yml");
 
 		safeInsideBoundary = globalConfig.getBoolean("safeinsideboundary", true);
 		taskDelay = globalConfig.getInt("ticks", 10);
 		if (taskDelay < 5) taskDelay = 5; // a minimum for safety
-		Main.logInfo("Loaded global config ("+global+"), keys found: "+globalConfig.getKeys(false).toString() + " (verbosity="+verbosity+")");
+		Log.high("Loaded global config ("+global+"), keys found: "+globalConfig.getKeys(false).toString() + " (verbosity="+verbosity+")");
 
-		loadIncludeFile(boundariesFile);
 	}
 
 
 	private void writeDefaultConfig(File global) {
 		try {
 			global.createNewFile();
-			Main.logInfo("Created an empty file " + parent.getDataFolder() +"/"+global.getName()+", please edit it!");
+			OtherBounds.logInfo("Created an empty file " + parent.getDataFolder() +"/"+global.getName()+", please edit it!");
 
 			PrintWriter stream = null;
 			stream = new PrintWriter(global);
@@ -113,20 +126,18 @@ public class Config {
 			stream.close();
 			//globalConfig.save(global);
 		} catch (IOException ex){
-			Main.logWarning("Could not generate "+global.getName()+". Are the file permissions OK?");
+			OtherBounds.logWarning("Could not generate "+global.getName()+". Are the file permissions OK?");
 		}
 	}		
-
-
 
 	private void loadIncludeFile(String filename) {
 		// Check for infinite include loops
 		if(loadedDropFiles.contains(filename)) {
-			Main.logWarning("Infinite include loop detected at " + filename);
+			OtherBounds.logWarning("Infinite include loop detected at " + filename);
 			return;
 		} else loadedDropFiles.add(filename);
 
-		Main.logInfo("Loading file: "+filename,HIGH);
+		OtherBounds.logInfo("Loading file: "+filename,HIGH);
 
 		File yml = new File(parent.getDataFolder(), filename);
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(yml);
@@ -136,14 +147,14 @@ public class Config {
 		{
 			try {
 				yml.createNewFile();
-				Main.logInfo("Created an empty file " + parent.getDataFolder() +"/"+filename+", please edit it!");
+				OtherBounds.logInfo("Created an empty file " + parent.getDataFolder() +"/"+filename+", please edit it!");
 				config.set("boundaries", null);
 				config.set("include-files", null);
 				config.set("defaults", null);
 				config.set("aliases", null);
 				config.save(yml);
 			} catch (IOException ex){
-				Main.logWarning(parent.getDescription().getName() + ": could not generate "+filename+". Are the file permissions OK?");
+				OtherBounds.logWarning(parent.getDescription().getName() + ": could not generate "+filename+". Are the file permissions OK?");
 			}
 			// Nothing to load in this case, so exit now
 			return;
@@ -181,7 +192,7 @@ public class Config {
 
 
 	private void loadBoundary(ConfigurationSection node, String name) {
-		if (node == null) Main.logInfo("No options found for boundary ("+name+")", HIGH);
+		if (node == null) OtherBounds.logInfo("No options found for boundary ("+name+")", HIGH);
 		//		for(String childName : node.getKeys(name)) {
 		//		ConfigurationNode subNode = node.getNode(name+"/"+childName);
 		//Main.logInfo("Parsing boundary ("+name+")", Verbosity.HIGH);
@@ -190,10 +201,10 @@ public class Config {
 
 		// loop through worlds and if positive add the boundary to that world
 		if (boundary == null) {
-			Main.logWarning("Boundary failed [null] ("+name+")", NORMAL);
+			OtherBounds.logWarning("Boundary failed [null] ("+name+")", NORMAL);
 			return;
 		} else if(boundary.worlds == null) {
-			Main.logWarning("No worlds found for boundary ("+name+")", NORMAL);
+			OtherBounds.logWarning("No worlds found for boundary ("+name+")", NORMAL);
 			return;
 		}
 
@@ -203,10 +214,10 @@ public class Config {
 				//Main.logWarning("Error: world ("+world.getName()+") is null in boundary.");
 				activeWorld = false;
 			}
-			Main.logInfo("Boundary worlds: "+activeWorld);
+			Log.high("Boundary worlds: "+activeWorld);
 			if (activeWorld || boundary.worlds.get(null)) {
-				Main.boundaryList.add(world, boundary); 
-				Main.logInfo("Adding boundary to world ("+world.getName()+").", HIGH);
+				OtherBounds.boundaryList.add(world, boundary); 
+				OtherBounds.logInfo("Adding boundary to world ("+world.getName()+").", HIGH);
 			}
 		}
 		//		}
@@ -223,7 +234,7 @@ public class Config {
 	}
 
 	public static Map<String, Boolean> parseWorldsFrom(ConfigurationSection node, Map<String, Boolean> def) {
-		Main.logInfo(node.toString(),HIGHEST);
+		OtherBounds.logInfo(node.toString(),HIGHEST);
 		List<String> worlds = getMaybeList(node, "world");
 		List<String> worldsExcept = getMaybeList(node, "worldexcept");
 
@@ -239,7 +250,7 @@ public class Config {
 			if(world == null && name.startsWith("-")) {
 				world = Bukkit.getServer().getWorld(name.substring(1));
 				if(world == null) {
-					Main.logWarning("Invalid world " + name + "; skipping...");
+					OtherBounds.logWarning("Invalid world " + name + "; skipping...");
 					continue;
 				}
 				result.put(world.getName(), false);
@@ -249,13 +260,18 @@ public class Config {
 		for(String name : worldsExcept) {
 			World world = Bukkit.getServer().getWorld(name);
 			if(world == null) {
-				Main.logWarning("Invalid world exception " + name + "; skipping...");
+				OtherBounds.logWarning("Invalid world exception " + name + "; skipping...");
 				continue;
 			}
 			result.put(world.getName(), false);
 		}
 		if(result.isEmpty()) return null;
 		return result;
+	}
+
+
+	public static Verbosity getVerbosity() {
+		return verbosity;
 	}
 
 
