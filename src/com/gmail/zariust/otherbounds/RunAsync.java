@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.gmail.zariust.otherbounds.boundary.Boundary;
 import com.gmail.zariust.otherbounds.common.Verbosity;
 
 class RunAsync implements Runnable {
     
-    private Main plugin;
+    private final Main plugin;
     
     public RunAsync (Main otherBounds) {
         this.plugin = otherBounds;
@@ -20,7 +19,7 @@ class RunAsync implements Runnable {
 
     // probably better to do on delays - 5 to 10 default?
     public void run() {
-    	Main.logInfo("Async run...", Verbosity.EXTREME);
+    	//Main.logInfo("Async run...", Verbosity.EXTREME);
         for (World world : plugin.getServer().getWorlds()) {
         	List<Player> playerList = new ArrayList<Player>();
         	playerList.addAll(world.getPlayers());
@@ -36,7 +35,7 @@ class RunAsync implements Runnable {
                 if (boundList == null) continue;
                 
                 for (Boundary boundary : boundList) {
-                	Main.logInfo("Checking boundary ("+boundary.name+")...", Verbosity.EXTREME);
+                	//Main.logInfo("Checking boundary ("+boundary.name+")...", Verbosity.EXTREME);
 
                     // for each boundary:
                     //   check if player in limits
