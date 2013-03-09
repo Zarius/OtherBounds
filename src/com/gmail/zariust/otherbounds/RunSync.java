@@ -15,7 +15,7 @@ class RunSync implements Runnable {
     	
         // Check if player in list
     	for (Player player : OtherBounds.damageList.keySet()) {
-    		if (!player.isOnline()) {
+    		if (!player.isOnline() || player.isDead()) {
     			// add player to new list as we cannot remove from the
     			// damageList whilst iterating through it.
     			removeList.add(player);
