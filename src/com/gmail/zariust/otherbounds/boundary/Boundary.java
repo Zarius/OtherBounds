@@ -51,7 +51,7 @@ public abstract class Boundary {
 		
 		Boundary boundary;
 		if (regionName != null) { // region
-			boundary = new RegionBound();
+			boundary = new RegionBound(regionName);
 		} else if (radius != null) { // Circle
 			boundary = new CircleBound(centerX, centerZ, radius);
 		} else { // assume rectangle
