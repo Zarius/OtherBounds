@@ -38,7 +38,6 @@ public abstract class Boundary {
 
     
 
-	@SuppressWarnings("rawtypes")
 	public static Boundary parseFrom(String name, ConfigurationSection node) {
 		OtherBounds.logInfo("Parsing boundary ("+name+") keys:"+node.getKeys(true).toString(), Verbosity.HIGH);
 		String regionName = node.getString("region");

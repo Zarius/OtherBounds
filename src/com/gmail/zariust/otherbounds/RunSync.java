@@ -10,12 +10,14 @@ import com.gmail.zariust.otherbounds.common.Verbosity;
 class RunSync implements Runnable {
 
     public void run() {
-    	OtherBounds.logInfo("Sync run...", Verbosity.HIGHEST);
+    	OtherBounds.logInfo("Sync run... damageList: "+OtherBounds.damageList.keySet().toString(), Verbosity.HIGHEST);
     	List<Player> removeList = new ArrayList<Player>();
     	
         // Check if player in list
     	for (Player player : OtherBounds.damageList.keySet()) {
     		if (!player.isOnline()) {
+    			// add player to new list as we cannot remove from the
+    			// damageList whilst iterating through it.
     			removeList.add(player);
     			continue;
     		}

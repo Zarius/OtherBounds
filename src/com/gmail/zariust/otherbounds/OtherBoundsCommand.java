@@ -82,7 +82,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 		switch(cmd) {
 		case RELOAD:
 			if(Dependencies.hasPermission(sender, "OtherBounds.admin.reloadconfig")) {
-				parent.config.load();
+				OtherBounds.config.load();
 				sender.sendMessage("OtherBounds config reloaded.");
 				Log.normal("Config reloaded by " + getName(sender) + ".");
 			} else sender.sendMessage("You don't have permission to reload the config.");
@@ -98,7 +98,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 		case ENABLE:
 			if(Dependencies.hasPermission(sender, "OtherBounds.admin.enabledisable")) {
 				if (!parent.enabled) {
-					parent.enableOtherBounds();
+					OtherBounds.enableOtherBounds();
 					sender.sendMessage(ChatColor.GREEN+"OtherBounds enabled.");
 				} else {
 					sender.sendMessage(ChatColor.GRAY+"OtherBounds is already enabled.");
@@ -108,7 +108,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 		case DISABLE:
 			if(Dependencies.hasPermission(sender, "OtherBounds.admin.enabledisable")) {
 				if (parent.enabled) {
-					parent.disableOtherBounds();
+					OtherBounds.disableOtherBounds();
 					sender.sendMessage(ChatColor.RED+"OtherBounds disabled.");
 				} else {
 					sender.sendMessage(ChatColor.GRAY+"OtherBounds is already disabled.");

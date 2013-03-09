@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gmail.zariust.otherbounds.boundary.BoundaryList;
@@ -74,7 +72,7 @@ public class OtherBounds extends JavaPlugin
 	public static void enableOtherBounds() {
         // Grab plugin manager
         // Register Events (OnPlayerMove if enabled in options?)
-		PluginManager pm = Bukkit.getServer().getPluginManager();
+		//PluginManager pm = Bukkit.getServer().getPluginManager();
         //pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Config.pri, this);
 
         // Set up scheduler tasks

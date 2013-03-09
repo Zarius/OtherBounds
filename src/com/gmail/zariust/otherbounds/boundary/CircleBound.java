@@ -3,9 +3,6 @@ package com.gmail.zariust.otherbounds.boundary;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.gmail.zariust.otherbounds.OtherBounds;
-import com.gmail.zariust.otherbounds.common.Verbosity;
-
 public class CircleBound extends Boundary {
     double radius;
 
@@ -21,7 +18,8 @@ public class CircleBound extends Boundary {
       this.definiteSq = (int)Math.sqrt(0.5D * this.radiusSq);
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
       return "Circlebound ("+this.name+") X: " + this.centerX + " Z: " + this.centerZ + " Radius: " + this.radius + " Safemessage: "+this.safeMessage+" Dangermessage: "+this.dangerMessage;
     }
     
