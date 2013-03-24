@@ -12,7 +12,7 @@ commands:
         description: Administrate the OtherBounds plugin
         aliases: [obr]
         usage: |
-            OtherBounds (configure anything to drop anything) 
+            OtherBounds 
             §7version: @build.major@.@build.minor@.@build.revision@ built: @build.date@
 
             (/obr) /ob reload - reload config
