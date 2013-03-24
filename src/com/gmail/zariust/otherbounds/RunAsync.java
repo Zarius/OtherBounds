@@ -31,8 +31,25 @@ class RunAsync implements Runnable {
                 boolean playerInSafeZone = false;
                 List <Boundary> boundList = OtherBounds.boundaryList.get(world);
 
+            	// First remove player since if there's no boundary, they are safe
+                List<Boundary> playerBoundaries = OtherBounds.boundaryList.get(playerName);
+
+                if (playerBoundaries != null) {
+                    List<Boundary> copyPlayerBoundaries = new ArrayList<Boundary>();
+                    copyPlayerBoundaries.addAll(playerBoundaries);
+                	for (Boundary bound : copyPlayerBoundaries) {
+                		if (!boundList.contains(bound)) {
+                			player.sendMessage(bound.safeMessage);
+                			OtherBounds.damageList.remove(player);
+                			OtherBounds.boundaryList.remove(playerName, bound);
+                		}
+                	}
+                }
+                
                 // Exit if no boundary for this world
-                if (boundList == null) continue;
+                if (boundList == null) {
+                	continue;
+                }
                 
                 for (Boundary boundary : boundList) {
                 	//Main.logInfo("Checking boundary ("+boundary.name+")...", Verbosity.EXTREME);
