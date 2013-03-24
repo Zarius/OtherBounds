@@ -3,6 +3,7 @@ package com.gmail.zariust.otherbounds;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -16,11 +17,11 @@ import com.gmail.zariust.otherbounds.common.Verbosity;
 public class OtherBounds extends JavaPlugin 
 {
     
-    public static HashMap <Player, Effects> damageList;
+    public static Map <Player, Effects> damageList;
     public static BoundaryList boundaryList;
 
     // usefull??
-    public static HashMap<String, List<Long>> profileMap;
+    public static Map<String, List<Long>> profileMap;
 
     static OtherBoundsConfig config;
     static Logger log;

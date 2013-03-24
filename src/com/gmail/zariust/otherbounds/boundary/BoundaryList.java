@@ -3,13 +3,14 @@ package com.gmail.zariust.otherbounds.boundary;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.World;
 
 public class BoundaryList {
-    HashMap <World, List<Boundary>> worldMap;
-    HashMap <String, List<Boundary>> playerMap;
+    Map <World, List<Boundary>> worldMap;
+    Map <String, List<Boundary>> playerMap;
 
     public BoundaryList() {
         worldMap  = new HashMap<World, List<Boundary>>(); // TODO: why does this need to be world and not string?
