@@ -1,6 +1,7 @@
 package com.gmail.zariust.otherbounds;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import org.bukkit.World;
@@ -22,7 +23,12 @@ class RunAsync implements Runnable {
     	//Main.logInfo("Async run...", Verbosity.EXTREME);
         for (World world : plugin.getServer().getWorlds()) {
         	List<Player> playerList = new ArrayList<Player>();
-        	playerList.addAll(world.getPlayers());
+        	try {
+        		playerList.addAll(world.getPlayers());
+        	} catch (ConcurrentModificationException ex) {
+        		Log.high("Async - concurrentexception with playerlist: skipping this damage cycle.");
+        		continue; // just skip this damage
+        	}
             for (Player player : playerList) {
                 String playerName = player.getName();
                 //  onPlayerMove(player) {
