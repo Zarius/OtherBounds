@@ -7,12 +7,13 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.gmail.zariust.otherbounds.common.Verbosity;
+import com.gmail.zariust.otherbounds.parameters.actions.Action;
+import com.gmail.zariust.otherbounds.parameters.actions.Occurrence;
 
 class RunSync implements Runnable {
 
     public void run() {
-    	OtherBounds.logInfo("Sync run... damageList: "+OtherBounds.damageList.keySet().toString(), Verbosity.HIGHEST);
+    	Log.highest("Sync run... damageList: "+OtherBounds.damageList.keySet().toString());
     	List<Player> removeList = new ArrayList<Player>();
         Map<Player, Effects> iterateMap = new HashMap<Player, Effects>();
     	iterateMap.putAll(OtherBounds.damageList);
@@ -29,10 +30,14 @@ class RunSync implements Runnable {
     		
     		int damage = effects.damagePerCheck + effects.invertedDamagePerCheck;
     		if (damage > 0) { 
-    			OtherBounds.logInfo("Damaging player ("+player.getName()+") for "+damage+" damage.", Verbosity.HIGHEST);
+    			Log.highest("Damaging player ("+player.getName()+") for "+damage+" damage.");
     			player.damage(damage);
     		} else if (damage < 0) {
     			player.setHealth(player.getHealth()+damage);
+    		}
+    		
+    		for (Action action : effects.actions) {
+    		    action.act(new Occurrence(player, player, player.getLocation()));
     		}
     	}
     	

@@ -8,9 +8,9 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.gmail.zariust.otherbounds.OtherBounds;
+import com.gmail.zariust.otherbounds.Log;
 import com.gmail.zariust.otherbounds.OtherBoundsConfig;
-import com.gmail.zariust.otherbounds.common.Verbosity;
+import com.gmail.zariust.otherbounds.parameters.actions.Action;
 
 public abstract class Boundary {
     public String name;
@@ -27,6 +27,8 @@ public abstract class Boundary {
 
     public String dangerMessage;
     public String safeMessage;
+
+    public final List<Action> actions = new ArrayList<Action>();
     
  //   public List<Action> actions;
     
@@ -39,7 +41,7 @@ public abstract class Boundary {
     
 
 	public static Boundary parseFrom(String name, ConfigurationSection node) {
-		OtherBounds.logInfo("Parsing boundary ("+name+") keys:"+node.getKeys(true).toString(), Verbosity.HIGH);
+		Log.high("Parsing boundary ("+name+") keys:"+node.getKeys(true).toString());
 		String regionName = node.getString("region");
 		Double radius = node.getDouble("radius", 0);
 		Double centerX = node.getDouble("center-x", 0);
@@ -75,12 +77,21 @@ public abstract class Boundary {
 		boundary.invertLimits = node.getBoolean("invertlimits", false);
 		boundary.safeMessage = node.getString("messagesafe", "");
 		boundary.dangerMessage = node.getString("messagedanger");
+		
+		Log.dMsg("Adding the actions.");
+        boundary.addActions(Action.parseNodes(node));
 
-		OtherBounds.logInfo("Loaded boundary ("+name+"): "+boundary.toString(), Verbosity.NORMAL);
+
+		Log.normal("Loaded boundary ("+name+"): "+boundary.toString());
 		
 		return boundary;
 	}
 	
+    public void addActions(List<Action> parse) {
+        if (parse != null)
+            this.actions .addAll(parse);
+    }
+
 	public static List<String> getMaybeList(ConfigurationSection node, String... keys) {
 		if(node == null) return new ArrayList<String>();
 		Object prop = null;

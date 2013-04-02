@@ -1,5 +1,10 @@
 package com.gmail.zariust.otherbounds;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Location;
+
+import com.gmail.zariust.otherbounds.parameters.actions.Action;
 
 class Effects {
     
@@ -8,4 +13,5 @@ class Effects {
     int invertedDamagePerCheck = 0;
     Boolean glow = false;
     Location teleportTo = null;
+    List<Action> actions = new ArrayList<Action>();
 }

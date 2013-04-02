@@ -1,8 +1,6 @@
 package com.gmail.zariust.otherbounds;
 
 import static com.gmail.zariust.otherbounds.common.Verbosity.HIGH;
-import static com.gmail.zariust.otherbounds.common.Verbosity.HIGHEST;
-import static com.gmail.zariust.otherbounds.common.Verbosity.NORMAL;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -102,7 +100,7 @@ public class OtherBoundsConfig {
 	private void writeDefaultConfig(File global) {
 		try {
 			global.createNewFile();
-			OtherBounds.logInfo("Created an empty file " + parent.getDataFolder() +"/"+global.getName()+", please edit it!");
+			Log.normal("Created an empty file " + parent.getDataFolder() +"/"+global.getName()+", please edit it!");
 
 			PrintWriter stream = null;
 			stream = new PrintWriter(global);
@@ -126,18 +124,18 @@ public class OtherBoundsConfig {
 			stream.close();
 			//globalConfig.save(global);
 		} catch (IOException ex){
-			OtherBounds.logWarning("Could not generate "+global.getName()+". Are the file permissions OK?");
+		    Log.warning("Could not generate "+global.getName()+". Are the file permissions OK?");
 		}
 	}		
 
 	private void loadIncludeFile(String filename) {
 		// Check for infinite include loops
 		if(loadedDropFiles.contains(filename)) {
-			OtherBounds.logWarning("Infinite include loop detected at " + filename);
+		    Log.warning("Infinite include loop detected at " + filename);
 			return;
 		} else loadedDropFiles.add(filename);
 
-		OtherBounds.logInfo("Loading file: "+filename,HIGH);
+		Log.high("Loading file: "+filename);
 
 		File yml = new File(parent.getDataFolder(), filename);
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(yml);
@@ -147,14 +145,14 @@ public class OtherBoundsConfig {
 		{
 			try {
 				yml.createNewFile();
-				OtherBounds.logInfo("Created an empty file " + parent.getDataFolder() +"/"+filename+", please edit it!");
+				Log.normal("Created an empty file " + parent.getDataFolder() +"/"+filename+", please edit it!");
 				config.set("boundaries", null);
 				config.set("include-files", null);
 				config.set("defaults", null);
 				config.set("aliases", null);
 				config.save(yml);
 			} catch (IOException ex){
-				OtherBounds.logWarning(parent.getDescription().getName() + ": could not generate "+filename+". Are the file permissions OK?");
+				Log.warning(parent.getDescription().getName() + ": could not generate "+filename+". Are the file permissions OK?");
 			}
 			// Nothing to load in this case, so exit now
 			return;
@@ -192,7 +190,7 @@ public class OtherBoundsConfig {
 
 
 	private void loadBoundary(ConfigurationSection node, String name) {
-		if (node == null) OtherBounds.logInfo("No options found for boundary ("+name+")", HIGH);
+		if (node == null) Log.high("No options found for boundary ("+name+")");
 		//		for(String childName : node.getKeys(name)) {
 		//		ConfigurationNode subNode = node.getNode(name+"/"+childName);
 		//Main.logInfo("Parsing boundary ("+name+")", Verbosity.HIGH);
@@ -201,10 +199,10 @@ public class OtherBoundsConfig {
 
 		// loop through worlds and if positive add the boundary to that world
 		if (boundary == null) {
-			OtherBounds.logWarning("Boundary failed [null] ("+name+")", NORMAL);
+			Log.warning("Boundary failed [null] ("+name+")");
 			return;
 		} else if(boundary.worlds == null) {
-			OtherBounds.logWarning("No worlds found for boundary ("+name+")", NORMAL);
+			Log.warning("No worlds found for boundary ("+name+")");
 			return;
 		}
 
@@ -217,7 +215,7 @@ public class OtherBoundsConfig {
 			Log.high("Boundary worlds: "+activeWorld);
 			if (activeWorld || boundary.worlds.get(null)) {
 				OtherBounds.boundaryList.add(world, boundary); 
-				OtherBounds.logInfo("Adding boundary to world ("+world.getName()+").", HIGH);
+				Log.high("Adding boundary to world ("+world.getName()+").");
 			}
 		}
 		//		}
@@ -234,7 +232,7 @@ public class OtherBoundsConfig {
 	}
 
 	public static Map<String, Boolean> parseWorldsFrom(ConfigurationSection node, Map<String, Boolean> def) {
-		OtherBounds.logInfo(node.toString(),HIGHEST);
+		Log.highest(node.toString());
 		List<String> worlds = getMaybeList(node, "world");
 		List<String> worldsExcept = getMaybeList(node, "worldexcept");
 
@@ -250,7 +248,7 @@ public class OtherBoundsConfig {
 			if(world == null && name.startsWith("-")) {
 				world = Bukkit.getServer().getWorld(name.substring(1));
 				if(world == null) {
-					OtherBounds.logWarning("Invalid world " + name + "; skipping...");
+					Log.warning("Invalid world " + name + "; skipping...");
 					continue;
 				}
 				result.put(world.getName(), false);
@@ -260,7 +258,7 @@ public class OtherBoundsConfig {
 		for(String name : worldsExcept) {
 			World world = Bukkit.getServer().getWorld(name);
 			if(world == null) {
-				OtherBounds.logWarning("Invalid world exception " + name + "; skipping...");
+				Log.warning("Invalid world exception " + name + "; skipping...");
 				continue;
 			}
 			result.put(world.getName(), false);

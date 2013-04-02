@@ -8,7 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.gmail.zariust.otherbounds.boundary.Boundary;
-import com.gmail.zariust.otherbounds.common.Verbosity;
+import com.gmail.zariust.otherbounds.parameters.actions.Action;
 
 class RunAsync implements Runnable {
     
@@ -23,12 +23,14 @@ class RunAsync implements Runnable {
     	//Main.logInfo("Async run...", Verbosity.EXTREME);
         for (World world : plugin.getServer().getWorlds()) {
         	List<Player> playerList = new ArrayList<Player>();
+        	
         	try {
         		playerList.addAll(world.getPlayers());
         	} catch (ConcurrentModificationException ex) {
         		Log.high("Async - concurrentexception with playerlist: skipping this damage cycle.");
         		continue; // just skip this damage
         	}
+        	
             for (Player player : playerList) {
                 String playerName = player.getName();
                 //  onPlayerMove(player) {
@@ -57,6 +59,8 @@ class RunAsync implements Runnable {
                 	continue;
                 }
                 
+                List<Action> actions = new ArrayList<Action>();
+
                 for (Boundary boundary : boundList) {
                 	//Main.logInfo("Checking boundary ("+boundary.name+")...", Verbosity.EXTREME);
 
@@ -72,7 +76,9 @@ class RunAsync implements Runnable {
                         	if (excepted(player, boundary)) {
                         		message = message + " (excepted)";
                         	} else {
-                                invertedBoundaryDamage = boundary.damage;                        		
+                        	    // apply the damage & any actions
+                                invertedBoundaryDamage = boundary.damage;
+                                actions.addAll(boundary.actions);
                         	}
                             if (!OtherBounds.boundaryList.contains(playerName, boundary)) {
                                 player.sendMessage(message);
@@ -86,19 +92,21 @@ class RunAsync implements Runnable {
                     } else {
                         // Standard Boundaries
                         if (!(boundary.isInside(player, boundary))) {
-                        	OtherBounds.logInfo("Player ("+playerName+") is outside boundary ("+boundary.name+"), setting damage to "+boundary.damage+".", Verbosity.HIGHEST);
+                        	Log.highest("Player ("+playerName+") is outside boundary ("+boundary.name+"), setting damage to "+boundary.damage+".");
                         	String message = boundary.dangerMessage;
                         	if (excepted(player, boundary)) {
                         		message = message + " (excepted)";
                         	} else {
+                                // apply the damage & any actions
                                 boundaryDamage = boundary.damage;
+                                actions.addAll(boundary.actions);
                         	}
                             if (!OtherBounds.boundaryList.contains(playerName, boundary)) {
                                 player.sendMessage(message); // FIXME: add dangermessage to a list and only show if not in safe zone
                                 OtherBounds.boundaryList.add(playerName, boundary);
                             }
                         } else {
-                        	OtherBounds.logInfo("Player ("+playerName+") is inside boundary ("+boundary.name+"), setting player as 'safe'.", Verbosity.HIGHEST);
+                        	Log.highest("Player ("+playerName+") is inside boundary ("+boundary.name+"), setting player as 'safe'.");
                     		playerInSafeZone = true; // we're inside a boundary so "safe"
                         	if (OtherBounds.boundaryList.contains(playerName, boundary)) {
                         		OtherBounds.boundaryList.remove(playerName, boundary);
@@ -111,16 +119,18 @@ class RunAsync implements Runnable {
                 Effects effects = new Effects();
                 // deal the applicable damage for this player
                 if (playerInSafeZone && OtherBoundsConfig.safeInsideBoundary) {
-                	OtherBounds.logInfo("Player is in safe zone.", Verbosity.EXTREME);
+                	Log.extreme("Player is in safe zone.");
                 } else {
                     // only deal damage if the player is not inside a normal boundary
                     effects.damagePerCheck = boundaryDamage;
-                	OtherBounds.logInfo("Player not in safe zone.", Verbosity.EXTREME);
+                	Log.extreme("Player not in safe zone.");
                 }
                 // inverted damage is done even if inside a normal boundary
                 effects.invertedDamagePerCheck = invertedBoundaryDamage;
 
-            	OtherBounds.logInfo("Adding to damage list for "+playerName+", damage: "+effects.damagePerCheck+" invertedDamage: "+effects.invertedDamagePerCheck, Verbosity.EXTREME);
+                effects.actions.addAll(actions);
+                
+            	Log.extreme("Adding to damage list for "+playerName+", damage: "+effects.damagePerCheck+" invertedDamage: "+effects.invertedDamagePerCheck);
                 OtherBounds.damageList.put(player, effects);
             }
         }
@@ -128,7 +138,7 @@ class RunAsync implements Runnable {
 
 	private boolean excepted(Player player, Boundary boundary) {
 		if (hasException(player, boundary) || hasExceptionPermissions(player, boundary)) {
-			OtherBounds.logInfo("Excepted...", Verbosity.EXTREME);
+		    Log.extreme("Excepted...");
 			return true;
 		}
 		
