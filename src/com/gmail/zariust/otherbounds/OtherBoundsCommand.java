@@ -46,7 +46,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 						if (firstArg.equalsIgnoreCase(item)) return cmd;
 					}
 				}
-				else if(label.equalsIgnoreCase("ob" + cmd.cmdShort) || label.equalsIgnoreCase("od" + cmd.cmdName))
+				else if(label.equalsIgnoreCase("ob" + cmd.cmdShort) || label.equalsIgnoreCase("ob" + cmd.cmdName))
 					return cmd;
 			}
 			return null;
@@ -81,14 +81,14 @@ public class OtherBoundsCommand implements CommandExecutor {
 		args = cmd.trim(args, cmdName);
 		switch(cmd) {
 		case RELOAD:
-			if(Dependencies.hasPermission(sender, "OtherBounds.admin.reloadconfig")) {
+			if(Dependencies.hasPermission(sender, "otherbounds.admin.reloadconfig")) {
 				OtherBounds.config.load();
 				sender.sendMessage("OtherBounds config reloaded.");
 				Log.normal("Config reloaded by " + getName(sender) + ".");
 			} else sender.sendMessage("You don't have permission to reload the config.");
 			break;
 		case SETTINGS:
-			if(Dependencies.hasPermission(sender, "OtherBounds.admin.profiling")) {
+			if(Dependencies.hasPermission(sender, "otherbounds.admin.profiling")) {
 				sender.sendMessage("OtherBounds settings:");
 				sender.sendMessage((parent.enabled ? ChatColor.GREEN+"OtherBounds enabled." : ChatColor.RED+"OtherBounds disabled."));
 				sender.sendMessage("Verbosity: "+ChatColor.GRAY+OtherBoundsConfig.getVerbosity());				
@@ -96,7 +96,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 			
 			break;
 		case ENABLE:
-			if(Dependencies.hasPermission(sender, "OtherBounds.admin.enabledisable")) {
+			if(Dependencies.hasPermission(sender, "otherbounds.admin.enabledisable")) {
 				if (!parent.enabled) {
 					OtherBounds.enableOtherBounds();
 					sender.sendMessage(ChatColor.GREEN+"OtherBounds enabled.");
@@ -106,7 +106,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 			} else sender.sendMessage("You don't have permission for this command.");
 			break;
 		case DISABLE:
-			if(Dependencies.hasPermission(sender, "OtherBounds.admin.enabledisable")) {
+			if(Dependencies.hasPermission(sender, "otherbounds.admin.enabledisable")) {
 				if (parent.enabled) {
 					OtherBounds.disableOtherBounds();
 					sender.sendMessage(ChatColor.RED+"OtherBounds disabled.");
