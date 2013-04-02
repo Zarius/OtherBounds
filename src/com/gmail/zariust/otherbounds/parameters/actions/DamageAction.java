@@ -29,7 +29,6 @@ public class DamageAction extends Action {
 
     static Map<String, DamageActionType>    matches = new HashMap<String, DamageActionType>();
     static {
-        matches.put("damage", DamageActionType.ATTACKER);
         matches.put("damageattacker", DamageActionType.ATTACKER);
         matches.put("damage.attacker", DamageActionType.ATTACKER);
         matches.put("damage.victim", DamageActionType.VICTIM);
