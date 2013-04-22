@@ -45,9 +45,14 @@ public abstract class Boundary {
 		String regionName = node.getString("region");
 		Double radius = node.getDouble("radius", 0);
 		Double centerX = node.getDouble("center-x", 0);
-		if (node.getString("center-x") == null) centerX = node.getDouble("centre-x", 0);
-		Double centerZ = node.getDouble("center-z", 0);
-		if (node.getString("center-x") == null) centerZ = node.getDouble("centre-z", 0);
+		if (node.contains("centre-x")) centerX = node.getDouble("centre-x", 0);
+
+		Double centerZ = node.getDouble("center-z");
+		if (node.contains("centre-z")) centerZ = node.getDouble("centre-z");
+
+		if (centerX == null || centerZ == null) {
+		    Log.normal("Boundary "+name+" failed to load - center x or z is null.");
+		}
 
 		//Action.parseNodes(node);
 		
