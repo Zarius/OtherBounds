@@ -116,6 +116,8 @@
             <jar destfile="${output-jar}">
                 <fileset dir="bin/" />
             	<fileset dir="src/" />
+                <fileset dir="OtherBounds/" includes="config.yml" />
+                <fileset dir="OtherBounds/" includes="boundaries.yml" />
                 <fileset dir="rsrc/" includes="plugin.yml" />
             </jar>
         </target>

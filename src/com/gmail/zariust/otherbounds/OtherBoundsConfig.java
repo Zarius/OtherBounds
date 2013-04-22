@@ -2,7 +2,10 @@ package com.gmail.zariust.otherbounds;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +54,8 @@ public class OtherBoundsConfig {
 		loadedDropFiles.clear();
 		
 		parent.getDataFolder().mkdirs();
-		String filename = "otherbounds-config.yml";
+		String filename = "config.yml";
+		String boundariesFilename = "boundaries.yml";
 
 		File global = new File(parent.getDataFolder(), filename);
 		YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(global);
@@ -59,10 +63,13 @@ public class OtherBoundsConfig {
 		Log.setConfigVerbosity(globalConfig);  // yes, already loaded in plugin.onEnable() - this is for reloads
 
 		// Make sure config file exists (even for reloads - it's possible this did not create successfully or was deleted before reload)
-		// TODO: create the folder if it doesn't exist
-		if (!global.exists()) {
-			writeDefaultConfig(global);
-		}
+		try {
+            firstRun();
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+		
 		// Load in the values from the configuration file
 		try {
 			globalConfig.load(global);
@@ -78,7 +85,7 @@ public class OtherBoundsConfig {
 		}
 
 		//enableBlockTo = globalConfig.getBoolean("enableblockto", false);
-		boundariesFile = globalConfig.getString("rootconfig", "otherbounds-config.yml");
+		boundariesFile = globalConfig.getString("rootconfig", boundariesFilename);
 
 		safeInsideBoundary = globalConfig.getBoolean("safeinsideboundary", true);
 		taskDelay = globalConfig.getInt("ticks", 10);
@@ -87,6 +94,57 @@ public class OtherBoundsConfig {
 
 	}
 
+    /**
+     * Check for config files and other settings (events & includes), if not
+     * found then export the resource from plugin jar file.
+     * 
+     * @throws Exception
+     */
+    private void firstRun() throws Exception {
+        if (!checkIfAllowedToRefreshFiles())
+            return;
+
+        List<String> files = new ArrayList<String>();
+        files.add("config.yml");
+        files.add("boundaries.yml");
+
+        for (String filename : files) {
+            File file = new File(parent.getDataFolder(), filename);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                copy(parent.getResource(filename), file);
+            }
+        }
+    }
+
+    private boolean checkIfAllowedToRefreshFiles()
+            throws FileNotFoundException, IOException,
+            InvalidConfigurationException {
+        File file = new File(parent.getDataFolder(), "config.yml");
+        if (file.exists()) {
+            YamlConfiguration globalConfig = YamlConfiguration
+                    .loadConfiguration(file);
+            globalConfig.load(file);
+            if (!globalConfig.getBoolean("restore_deleted_config_files", true))
+                return false;
+        }
+        return true;
+    }
+
+    private void copy(InputStream in, File file) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	private void writeDefaultConfig(File global) {
 		try {

@@ -1,0 +1,3 @@
+verbosity: normal          # controls how many debug messages are sent to console (low, normal, high, highest)
+ticks: 40                  # "OB cycle" - how often we check (& damage) players outside the boundary
+safeinsideboundary: false  # if you have concentric boundaries set to false, if you have non-concentric set to true

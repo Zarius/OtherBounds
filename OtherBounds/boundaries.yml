@@ -1,0 +1,23 @@
+boundaries:
+  main_boundary:
+    radius: 2000
+    center-x: 0.0                              # note: centre or center accepted
+    center-z: 0.0
+    world: ALL                                 # or list, eg [world1, world2] or [ALL, -world1]
+    damage: 1                                  # 1 half-heart per OB cycle
+    #except: [p1, p2, etc.]                    # optional list of player names, eg. [plugh, xyzzy, fred]
+    exceptpermissions: [mainBoundaryOverride]  # give players otherbounds.custom.mainBoundaryOverride (note, cannot include _ characters)
+    messagedanger: "Warning - radiation detected."
+    messagesafe:   "You have returned to safer lands."
+
+  second_boundary:
+    radius: 2300
+    center-x: 0.0                              # note: centre or center accepted
+    center-z: 0.0
+    world: ALL
+    damage: 4 # 4 half-hearts per OB cycle
+    except: [p1, p2, etc.]
+    exceptpermissions: [secondBoundaryOverride]  # give players otherbounds.custom.secondBoundaryOverride permission
+    messagedanger: "Warning - high radiation level detected, turn back."
+    messagesafe:   "The radiation is lower here but still dangerous."    
+    potioneffects: [nausea/2/40t, blindness/2/40t]
