@@ -91,7 +91,7 @@ public class OtherBoundsCommand implements CommandExecutor {
 			if(Dependencies.hasPermission(sender, "otherbounds.admin.profiling")) {
 				sender.sendMessage("OtherBounds settings:");
 				sender.sendMessage((parent.enabled ? ChatColor.GREEN+"OtherBounds enabled." : ChatColor.RED+"OtherBounds disabled."));
-				sender.sendMessage("Verbosity: "+ChatColor.GRAY+OtherBoundsConfig.getVerbosity());				
+				sender.sendMessage("Verbosity: "+ChatColor.GRAY+Log.getVerbosity());				
 			} else sender.sendMessage("You don't have permission for this command.");
 			
 			break;

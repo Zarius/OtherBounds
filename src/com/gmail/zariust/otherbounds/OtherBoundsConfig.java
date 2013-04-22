@@ -1,7 +1,5 @@
 package com.gmail.zariust.otherbounds;
 
-import static com.gmail.zariust.otherbounds.common.Verbosity.HIGH;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,13 +19,10 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.gmail.zariust.otherbounds.boundary.Boundary;
-import com.gmail.zariust.otherbounds.common.CommonPlugin;
-import com.gmail.zariust.otherbounds.common.Verbosity;
 
 public class OtherBoundsConfig {
 
 	public static long taskDelay;
-	public static Verbosity verbosity;
 	public static boolean safeInsideBoundary;
 	private final OtherBounds parent;
 
@@ -37,9 +32,6 @@ public class OtherBoundsConfig {
 
 	public OtherBoundsConfig(OtherBounds instance) {
 		parent = instance;
-
-		verbosity = HIGH;
-
 		taskDelay = 120;
 	}
 
@@ -64,6 +56,8 @@ public class OtherBoundsConfig {
 		File global = new File(parent.getDataFolder(), filename);
 		YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(global);
 
+		Log.setConfigVerbosity(globalConfig);  // yes, already loaded in plugin.onEnable() - this is for reloads
+
 		// Make sure config file exists (even for reloads - it's possible this did not create successfully or was deleted before reload)
 		// TODO: create the folder if it doesn't exist
 		if (!global.exists()) {
@@ -83,16 +77,13 @@ public class OtherBoundsConfig {
 			e.printStackTrace();
 		}
 
-		//globalConfig.set("verbosity", "normal");
-
-		verbosity = CommonPlugin.getConfigVerbosity(globalConfig);
 		//enableBlockTo = globalConfig.getBoolean("enableblockto", false);
 		boundariesFile = globalConfig.getString("rootconfig", "otherbounds-config.yml");
 
 		safeInsideBoundary = globalConfig.getBoolean("safeinsideboundary", true);
 		taskDelay = globalConfig.getInt("ticks", 10);
 		if (taskDelay < 5) taskDelay = 5; // a minimum for safety
-		Log.high("Loaded global config ("+global+"), keys found: "+globalConfig.getKeys(false).toString() + " (verbosity="+verbosity+")");
+		Log.high("Loaded global config ("+global+"), keys found: "+globalConfig.getKeys(false).toString() + " (verbosity="+Log.verbosity+")");
 
 	}
 
@@ -266,12 +257,5 @@ public class OtherBoundsConfig {
 		if(result.isEmpty()) return null;
 		return result;
 	}
-
-
-	public static Verbosity getVerbosity() {
-		return verbosity;
-	}
-
-
 }
 

@@ -21,9 +21,7 @@ import com.gmail.zariust.otherbounds.parameters.actions.Action;
 public class OtherBounds extends JavaPlugin 
 {
     private static Server server;
-    protected static OtherBounds plugin;
-    protected static String pluginName;
-    protected static String pluginVersion;    
+    public static OtherBounds plugin;
     boolean enabled;
     
     // Global random number generator - used for DamageAction
@@ -63,8 +61,8 @@ public class OtherBounds extends JavaPlugin
 	public void onEnable() {
         OtherBounds.server = getServer();
         OtherBounds.plugin = this;
-        pluginName = this.getDescription().getName();
-        pluginVersion = this.getDescription().getVersion();
+        Log.pluginName = this.getDescription().getName();
+        Log.pluginVersion = this.getDescription().getVersion();
 
         File global = new File(getDataFolder(), "otherbounds-config.yml");
         YamlConfiguration globalConfig = YamlConfiguration
