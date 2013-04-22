@@ -137,7 +137,7 @@ public class MessageAction extends Action {
         return (msg == null) ? "" : msg;
     }
 
-    static public String parseVariables(String msg, String playerName) {
+    static public String parseVariables(String msg, String playerName, Location loc) {
         if (msg == null)
             return null;
 
@@ -146,9 +146,7 @@ public class MessageAction extends Action {
         msg = msg.replace("%p", playerName);
         msg = msg.replace("%P", playerName.toUpperCase());
 
-        // msg = msg.replaceAll("&([0-9a-fA-F])", "§$1"); // replace color codes
-        // msg = msg.replaceAll("&([kKlLmMnNoOrR])", "§$1"); // replace magic
-        // color code & others
+        msg = msg.replace("%l", loc.getBlockX()+" "+loc.getBlockY()+" "+loc.getBlockZ());
 
         msg = ChatColor.translateAlternateColorCodes('&', msg);
         // Colors: &([0-9a-fA-F])
@@ -172,7 +170,7 @@ public class MessageAction extends Action {
         if (occurence.getAttacker() instanceof Player)
             playerName = ((Player)occurence.getAttacker()).getName();
 
-        msg = parseVariables(msg, playerName);
+        msg = parseVariables(msg, playerName, occurence.getLocation());
 
         return msg;
     }
