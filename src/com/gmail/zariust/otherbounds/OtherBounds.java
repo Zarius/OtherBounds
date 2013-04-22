@@ -101,7 +101,6 @@ public class OtherBounds extends JavaPlugin
         if (syncTaskId != null) syncTaskId.cancel();
         if (aSyncTaskId != null) {
             Bukkit.getScheduler().cancelTask(aSyncTaskId.getTaskId());
-            Log.normal("Cancelled async" + aSyncTaskId);
         }
 		plugin.enabled = false;
 	}
